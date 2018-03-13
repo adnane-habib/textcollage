@@ -238,18 +238,20 @@ public class DrawTextPanel extends JPanel  {
 				PrintWriter result = new PrintWriter(dataFile);
 				for (DrawTextItem element : listOfItems)
 				{
-					result.print(element.getString() + "\t" + element.getFont()
-					+ "\t" + element.getX()+ "\t" + element.getY()
+					result.print(element.getFont() + "\t" + element.getX()+ "\t" + element.getY()
 					+ "\t" + element.getTextColor().getRed() + "\t" + element.getTextColor().getGreen() 
-					+ "\t" + element.getTextColor().getBlue()+ "\t" + element.getBackground().getRed()
-					+ "\t" + element.getBackground().getGreen() + "\t" + element.getBackground().getBlue()
-					+ "\t" + element.getBorder()+ "\t" + element.getRotationAngle()
-					+ "\t" + element.getMagnification()+ "\t" + element.getTextTransparency()
-					+ "\t" + element.getBackgroundTransparency());
+					+ "\t" + element.getTextColor().getBlue()+ "\t" + element.getBorder()+ "\t"
+					+ element.getRotationAngle() + "\t" + element.getMagnification()+ "\t" + element.getTextTransparency()
+					+ "\t" + element.getBackgroundTransparency()+ "\t" + element.getString());
+					
+
+
 					result.println("");					
 				
 				}
 				result.flush();
+				result.close();
+
 				}
 			catch (IOException e){
 				JOptionPane.showMessageDialog(this,"Cannot open file" + dataFile.toString());
@@ -258,6 +260,8 @@ public class DrawTextPanel extends JPanel  {
 				JOptionPane.showMessageDialog(this, 
 						"Sorry, an error occurred while trying to save the file:\n" + e);
 			}
+
+			
 			
 			
 		}
