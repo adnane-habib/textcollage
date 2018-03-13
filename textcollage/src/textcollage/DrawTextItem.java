@@ -1,6 +1,6 @@
 package textcollage;
 
-
+//adding a comment
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
