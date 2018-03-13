@@ -154,10 +154,13 @@ public class DrawTextPanel extends JPanel  {
 		
 		//theString = s;  // Set this string as the ONLY string to be drawn on the canvas!
 		//listOfItems[count] = s;
-		if (listOfItems == null) // To prevent errors when emptying the array list
+		if (listOfItems == null){ // To prevent errors when emptying the array list
 			listOfItems = new ArrayList<DrawTextItem>();
+			System.out.println("I am here in the clear condition");
+			
+		}
 		//else
-			listOfItems.add(s);
+		listOfItems.add(s);
 		undoMenuItem.setEnabled(true);
 		canvas.repaint();
 		//count++;
@@ -235,13 +238,17 @@ public class DrawTextPanel extends JPanel  {
 				undoMenuItem.setEnabled(false);
 				canvas.repaint();}
 			else {
-			for (int i = listOfItems.size(); i >0; i--){
+			/*for (int i = listOfItems.size(); i >0; i--){
 				listOfItems.remove(i);
 				System.out.println("" + i);
 				i++;
 				undoMenuItem.setEnabled(false);
 				canvas.repaint();		
-			}}
+			}*/
+				listOfItems.clear();
+				undoMenuItem.setEnabled(false);
+				canvas.repaint();
+			}
 				//element = null;
 			//listOfItem.add(new DrawTextItem());
 
