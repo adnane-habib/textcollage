@@ -238,8 +238,16 @@ public class DrawTextPanel extends JPanel  {
 				PrintWriter result = new PrintWriter(dataFile);
 				for (DrawTextItem element : listOfItems)
 				{
-					result.print("String name is "+element.getString() + "\t" + "Magnification is  " + element.getMagnification());
+					result.print(element.getString() + "\t" + element.getFont()
+					+ "\t" + element.getX()+ "\t" + element.getY()
+					+ "\t" + element.getTextColor().getRed() + "\t" + element.getTextColor().getGreen() 
+					+ "\t" + element.getTextColor().getBlue()+ "\t" + element.getBackground().getRed()
+					+ "\t" + element.getBackground().getGreen() + "\t" + element.getBackground().getBlue()
+					+ "\t" + element.getBorder()+ "\t" + element.getRotationAngle()
+					+ "\t" + element.getMagnification()+ "\t" + element.getTextTransparency()
+					+ "\t" + element.getBackgroundTransparency());
 					result.println("");					
+				
 				}
 				result.flush();
 				}
