@@ -154,7 +154,10 @@ public class DrawTextPanel extends JPanel  {
 		
 		//theString = s;  // Set this string as the ONLY string to be drawn on the canvas!
 		//listOfItems[count] = s;
-		listOfItems.add(s);
+		if (listOfItems == null) // To prevent errors when emptying the array list
+			listOfItems = new ArrayList<DrawTextItem>();
+		//else
+			listOfItems.add(s);
 		undoMenuItem.setEnabled(true);
 		canvas.repaint();
 		//count++;
