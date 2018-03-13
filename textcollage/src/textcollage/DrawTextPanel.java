@@ -14,6 +14,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -225,7 +227,31 @@ public class DrawTextPanel extends JPanel  {
 	 */
 	private void doMenuCommand(String command) {
 		if (command.equals("Save...")) { // save all the string info to a file
-			JOptionPane.showMessageDialog(this, "Sorry, the Save command is not implemented.");
+
+			File dataFile = fileChooser.getOutputFile(this, "Select Data File Name", "textimage.txt");
+			if (dataFile == null)
+				return;
+			//JOptionPane.showMessageDialog(this, "Sorry, the Save command is not implemented.");
+
+			try {
+				// Because the image is not available, I will make a new BufferedImage and
+				PrintWriter result = new PrintWriter(dataFile);
+				for (DrawTextItem element : listOfItems)
+				{
+					result.print("String name is "+element.getString() + "\t" + "Magnification is  " + element.getMagnification());
+					result.println("");					
+				}
+				result.flush();
+				}
+			catch (IOException e){
+				JOptionPane.showMessageDialog(this,"Cannot open file" + dataFile.toString());
+				return;
+			}			catch (Exception e) {
+				JOptionPane.showMessageDialog(this, 
+						"Sorry, an error occurred while trying to save the file:\n" + e);
+			}
+			
+			
 		}
 		else if (command.equals("Open...")) { // read a previously saved file, and reconstruct the list of strings
 			JOptionPane.showMessageDialog(this, "Sorry, the Open command is not implemented.");
