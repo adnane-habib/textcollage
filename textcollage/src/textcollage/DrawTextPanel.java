@@ -14,9 +14,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Scanner;
+
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JColorChooser;
@@ -158,7 +161,7 @@ public class DrawTextPanel extends JPanel  {
 		//listOfItems[count] = s;
 		if (listOfItems == null){ // To prevent errors when emptying the array list
 			listOfItems = new ArrayList<DrawTextItem>();
-			System.out.println("I am here in the clear condition");
+			//System.out.println("I am here in the clear condition");
 			
 		}
 		//else
@@ -248,10 +251,10 @@ public class DrawTextPanel extends JPanel  {
 				
 				for (DrawTextItem element : listOfItems)
 				{
-					result.print(element.getFont() + "\t" + element.getX()+ "\t" + element.getY()
+					result.print(element.getX()+ "\t" + element.getY()
 					+ "\t" + element.getTextColor().getRed() + "\t" + element.getTextColor().getGreen() 
-					+ "\t" + element.getTextColor().getBlue()+ "\t" + element.getBorder()+ "\t"
-					+ element.getRotationAngle() + "\t" + element.getMagnification()+ "\t" + element.getTextTransparency()
+					+ "\t" + element.getTextColor().getBlue()+ "\t" + element.getRotationAngle() 
+					+ "\t" + element.getMagnification()+ "\t" + element.getTextTransparency()
 					+ "\t" + element.getBackgroundTransparency()+ "\t" + element.getString());
 					
 					result.println("");					
@@ -274,7 +277,57 @@ public class DrawTextPanel extends JPanel  {
 			
 		}
 		else if (command.equals("Open...")) { // read a previously saved file, and reconstruct the list of strings
-			File dataFile = fileChooser.getOutputFile(this, "Select Data File Name to import", "textimage.txt");
+			File dataFile = fileChooser.getInputFile(this, "Select Data File Name to import");
+			if (dataFile == null)
+				return;
+			try{
+				Scanner input = new Scanner(dataFile);
+				try {
+					String backGround = input.nextLine();
+					int backGroundRed, backGroundGreen, backGroundBlue;
+					backGroundRed = Integer.parseInt(backGround.split("\t")[0]);
+					backGroundGreen = Integer.parseInt(backGround.split("\t")[1]);
+					backGroundBlue = Integer.parseInt(backGround.split("\t")[2]);
+					
+					ArrayList<DrawTextItem> listOfItemsImported = new ArrayList<DrawTextItem>();
+					while (input.hasNextLine()){
+						String string = input.nextLine();
+						String[] items = string.split("\t");
+						int elementX = Integer.parseInt(items[0]);
+						int elementY = Integer.parseInt(items[1]);
+						int elementRed = Integer.parseInt(items[2]);
+						int elementGreen = Integer.parseInt(items[3]);
+						int elementBlue = Integer.parseInt(items[4]);
+						double elementAngle = Double.parseDouble(items[5]);
+						double elementMag = Double.parseDouble(items[6]);
+						double elementTrans = Double.parseDouble(items[7]);
+						double elementBackTrans = Double.parseDouble(items[8]);
+						String text = items[9];
+						
+						DrawTextItem element = new DrawTextItem(text, elementX, elementY);
+						element.setBackgroundTransparency(elementBackTrans);
+						element.setTextTransparency(elementTrans);
+						element.setRotationAngle(elementAngle);
+						element.setMagnification(elementMag);
+						Color textColor = new Color(elementRed, elementGreen, elementBlue);
+						element.setTextColor(textColor);
+						listOfItemsImported.add(element);						
+					}
+					listOfItems = listOfItemsImported;
+					
+					Color backgroundColor = new Color(backGroundRed, backGroundGreen, backGroundBlue);
+					canvas.setBackground(backgroundColor);
+				}
+				catch (Exception e){
+					JOptionPane.showMessageDialog(this, "Error occured. File not valid." + e);
+					return;
+				}
+			}
+			catch (FileNotFoundException e){
+				JOptionPane.showMessageDialog(this, "File not found." + e);
+				return;
+			}
+		
 			canvas.repaint(); // (you'll need this to make the new list of strings take effect)
 		}
 		else if (command.equals("Clear")) {  // remove all strings
