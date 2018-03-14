@@ -234,8 +234,18 @@ public class DrawTextPanel extends JPanel  {
 			//JOptionPane.showMessageDialog(this, "Sorry, the Save command is not implemented.");
 
 			try {
-				// Because the image is not available, I will make a new BufferedImage and
+				// Image data is saved in a text file
+				//File text format is: first line 3 integers represent background colors
+				// Red, Green and Blue
 				PrintWriter result = new PrintWriter(dataFile);
+				
+				result.println(canvas.getBackground().getRed()+ "\t" +canvas.getBackground().getGreen()
+						+ "\t" +canvas.getBackground().getBlue());
+				// For each element, first font is recorded, then X and Y position
+				// Following is the text color (red, green and blue)
+				// then the text border, rotation angle, magnification, transparency, background transparency
+				// and finally the string. THe string is left to the end since it can be a sentence. 
+				
 				for (DrawTextItem element : listOfItems)
 				{
 					result.print(element.getFont() + "\t" + element.getX()+ "\t" + element.getY()
@@ -244,8 +254,6 @@ public class DrawTextPanel extends JPanel  {
 					+ element.getRotationAngle() + "\t" + element.getMagnification()+ "\t" + element.getTextTransparency()
 					+ "\t" + element.getBackgroundTransparency()+ "\t" + element.getString());
 					
-
-
 					result.println("");					
 				
 				}
@@ -266,7 +274,7 @@ public class DrawTextPanel extends JPanel  {
 			
 		}
 		else if (command.equals("Open...")) { // read a previously saved file, and reconstruct the list of strings
-			JOptionPane.showMessageDialog(this, "Sorry, the Open command is not implemented.");
+			File dataFile = fileChooser.getOutputFile(this, "Select Data File Name to import", "textimage.txt");
 			canvas.repaint(); // (you'll need this to make the new list of strings take effect)
 		}
 		else if (command.equals("Clear")) {  // remove all strings
