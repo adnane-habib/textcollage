@@ -47,10 +47,10 @@ public class DrawTextPanel extends JPanel  {
 	// variable should be replaced by a variable of type
 	// ArrayList<DrawStringItem> that can store multiple items.
 	
-	private DrawTextItem theString;  // change to an ArrayList<DrawTextItem> !
-	//private int size = 100;
-	//private int count = 0;
-	//private DrawTextItem[] listOfItems = new DrawTextItem[size];//working with array, solve it with array list
+	//private DrawTextItem theString;  // change to an ArrayList<DrawTextItem> !
+	//My input.
+	//Array list is declared and used instead of single element.
+	
 	private ArrayList<DrawTextItem> listOfItems = new ArrayList<DrawTextItem>();//working with array, solve it with array list
 
 	
@@ -62,7 +62,8 @@ public class DrawTextPanel extends JPanel  {
 	private JMenuBar menuBar; // a menu bar with command that affect this panel
 	private MenuHandler menuHandler; // a listener that responds whenever the user selects a menu command
 	private JMenuItem undoMenuItem;  // the "Remove Item" command from the edit menu
-	
+	private JTextField angleInput; // To input text angle
+	private JTextField transparency; // To input text transparency
 	
 	/**
 	 * An object of type Canvas is used for the drawing area.
@@ -79,10 +80,7 @@ public class DrawTextPanel extends JPanel  {
 			super.paintComponent(g);
 			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
 					RenderingHints.VALUE_ANTIALIAS_ON);
-			/*for (DrawTextItem element : listOfItems){
-			if (element != null)
-				element.draw(g);
-		}		*/	
+			// my input
 			if (listOfItems != null){
 			for (DrawTextItem element : listOfItems){
 			if (element != null)
@@ -121,10 +119,20 @@ public class DrawTextPanel extends JPanel  {
 		setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 		canvas = new Canvas();
 		add(canvas, BorderLayout.CENTER);
+		
 		JPanel bottom = new JPanel();
 		bottom.add(new JLabel("Text to add: "));
 		input = new JTextField("Hello World!", 40);
 		bottom.add(input);
+		
+		bottom.add(new JLabel("Set angle: "));
+		angleInput = new JTextField("0", 4);
+		bottom.add(angleInput);
+		
+		bottom.add(new JLabel("Set Transparency: "));
+		transparency = new JTextField("0", 4);
+		bottom.add(transparency);
+		
 		add(bottom, BorderLayout.SOUTH);
 		canvas.addMouseListener( new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -145,9 +153,35 @@ public class DrawTextPanel extends JPanel  {
 			input.setText("Hello World!");
 			text = "Hello World!";
 		}
+		String angle = angleInput.getText().trim();
+		Double rotationAngle = 0.0;
+		try {
+			rotationAngle = Double.parseDouble(angle);
+		}
+		catch (Exception e1){
+			JOptionPane.showMessageDialog(this, "Angle must be a valid number.");
+			return;
+		}
+		String trans = transparency.getText().trim();
+
+		Double textTransparency = 0.0;
+		try {
+			textTransparency = Double.parseDouble(trans);
+			if (textTransparency<0 || textTransparency>1){
+				JOptionPane.showMessageDialog(this, "Transparency must be a valid number, between 0 & 1.");
+				return;
+				}
+		}
+		catch (Exception e1){
+			JOptionPane.showMessageDialog(this, "Transparency must be a valid number.");
+			return;
+		}
+		
 		DrawTextItem s = new DrawTextItem( text, e.getX(), e.getY() );
 		s.setTextColor(currentTextColor);  // Default is null, meaning default color of the canvas (black).
-		
+		// Adding these two parameters settings
+		s.setRotationAngle(rotationAngle);
+		s.setTextTransparency(textTransparency);
 //   SOME OTHER OPTIONS THAT CAN BE APPLIED TO TEXT ITEMS:
 //		s.setFont( new Font( "Serif", Font.ITALIC + Font.BOLD, 12 ));  // Default is null, meaning font of canvas.
 //		s.setMagnification(3);  // Default is 1, meaning no magnification.
@@ -158,17 +192,14 @@ public class DrawTextPanel extends JPanel  {
 //		s.setBackgroundTransparency(0.7);  // Default is 0, meaning background is not transparent.
 		
 		//theString = s;  // Set this string as the ONLY string to be drawn on the canvas!
-		//listOfItems[count] = s;
 		if (listOfItems == null){ // To prevent errors when emptying the array list
 			listOfItems = new ArrayList<DrawTextItem>();
 			//System.out.println("I am here in the clear condition");
 			
 		}
-		//else
 		listOfItems.add(s);
 		undoMenuItem.setEnabled(true);
 		canvas.repaint();
-		//count++;
 	}
 	
 	/**
@@ -272,26 +303,23 @@ public class DrawTextPanel extends JPanel  {
 						"Sorry, an error occurred while trying to save the file:\n" + e);
 			}
 
-			
-			
-			
-		}
+			}
 		else if (command.equals("Open...")) { // read a previously saved file, and reconstruct the list of strings
 			File dataFile = fileChooser.getInputFile(this, "Select Data File Name to import");
 			if (dataFile == null)
 				return;
 			try{
-				Scanner input = new Scanner(dataFile);
+				Scanner inputFile = new Scanner(dataFile);
 				try {
-					String backGround = input.nextLine();
+					String backGround = inputFile.nextLine();
 					int backGroundRed, backGroundGreen, backGroundBlue;
 					backGroundRed = Integer.parseInt(backGround.split("\t")[0]);
 					backGroundGreen = Integer.parseInt(backGround.split("\t")[1]);
 					backGroundBlue = Integer.parseInt(backGround.split("\t")[2]);
 					
 					ArrayList<DrawTextItem> listOfItemsImported = new ArrayList<DrawTextItem>();
-					while (input.hasNextLine()){
-						String string = input.nextLine();
+					while (inputFile.hasNextLine()){
+						String string = inputFile.nextLine();
 						String[] items = string.split("\t");
 						int elementX = Integer.parseInt(items[0]);
 						int elementY = Integer.parseInt(items[1]);
@@ -314,17 +342,17 @@ public class DrawTextPanel extends JPanel  {
 						listOfItemsImported.add(element);						
 					}
 					listOfItems = listOfItemsImported;
-					
+					inputFile.close();
 					Color backgroundColor = new Color(backGroundRed, backGroundGreen, backGroundBlue);
 					canvas.setBackground(backgroundColor);
 				}
 				catch (Exception e){
-					JOptionPane.showMessageDialog(this, "Error occured. File not valid." + e);
+					JOptionPane.showMessageDialog(this, "Error occured. File not valid.");
 					return;
 				}
 			}
 			catch (FileNotFoundException e){
-				JOptionPane.showMessageDialog(this, "File not found." + e);
+				JOptionPane.showMessageDialog(this, "File not found.");
 				return;
 			}
 		
@@ -332,24 +360,15 @@ public class DrawTextPanel extends JPanel  {
 		}
 		else if (command.equals("Clear")) {  // remove all strings
 			listOfItems = null;//theString = null;   // Remove the ONLY string from the canvas.
-			int j =0;
-			if (listOfItems == null){
+ 			if (listOfItems == null){
 				undoMenuItem.setEnabled(false);
 				canvas.repaint();}
 			else {
-			/*for (int i = listOfItems.size(); i >0; i--){
-				listOfItems.remove(i);
-				System.out.println("" + i);
-				i++;
-				undoMenuItem.setEnabled(false);
-				canvas.repaint();		
-			}*/
+
 				listOfItems.clear();
 				undoMenuItem.setEnabled(false);
 				canvas.repaint();
 			}
-				//element = null;
-			//listOfItem.add(new DrawTextItem());
 
 		}
 		else if (command.equals("Remove Item")) { // remove the most recently added string
